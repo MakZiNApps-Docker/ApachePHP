@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:16.04
 LABEL maintainer="Sarfaraz Ali Khan (mrkhan1417@gmail.com)"
 
 RUN apt update && apt install -y \

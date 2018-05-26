@@ -1,6 +1,7 @@
 FROM ubuntu:16.04
 LABEL maintainer="Sarfaraz Ali Khan (mrkhan1417@gmail.com)"
 
+#Install Apache2 And PHP
 RUN apt update && \
     DEBIAN_FRONTEND=noninteractive \
     apt install -y \
@@ -12,9 +13,10 @@ RUN apt update && \
     php-curl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /www
-RUN sed -i "s|/var/www|/www|g" /etc/apache2/apache2.conf
-RUN sed -i "s|/var/www/html|/www|g" /etc/apache2/sites-available/000-default.conf
+#Change apache web directory to /www
+RUN mkdir /www && \
+    sed -i "s|/var/www|/www|g" /etc/apache2/apache2.conf && \
+    sed -i "s|/var/www/html|/www|g" /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
 WORKDIR /www

@@ -11,6 +11,7 @@ RUN apt update && \
     php-mysql \
     php-gd \
     php-curl \
+    php-mbstring \
     && rm -rf /var/lib/apt/lists/*
 
 #Change apache web directory to /www

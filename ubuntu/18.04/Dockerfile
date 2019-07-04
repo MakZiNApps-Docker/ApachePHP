@@ -12,6 +12,7 @@ RUN apt update && \
     php-gd \
     php-curl \
     php-mbstring \
+    php-xml \
     && rm -rf /var/lib/apt/lists/*
 
 #Change apache web directory to /www

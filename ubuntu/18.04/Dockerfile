@@ -15,10 +15,12 @@ RUN apt update && \
     php-xml \
     && rm -rf /var/lib/apt/lists/*
 
-#Change apache web directory to /www
+#Change apache web directory to /www and enable mod_rewrite
 RUN mkdir /www && \
     sed -i "s|/var/www|/www|g" /etc/apache2/apache2.conf && \
-    sed -i "s|/var/www/html|/www|g" /etc/apache2/sites-available/000-default.conf
+    sed -i "s|/var/www/html|/www|g" /etc/apache2/sites-available/000-default.conf && \
+    a2enmod rewrite && \
+    sed -i '/<Directory \/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
 EXPOSE 80
 WORKDIR /www

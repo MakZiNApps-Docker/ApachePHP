@@ -37,3 +37,5 @@ RUN mkdir /www && \
 
 EXPOSE 80
 WORKDIR /www
+
+CMD apachectl -D FOREGROUND

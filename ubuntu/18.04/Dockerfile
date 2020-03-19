@@ -13,7 +13,20 @@ RUN apt update && \
     php-curl \
     php-mbstring \
     php-xml \
+    php-bcmath \
+    php-intl \
+    php-soap \
+    php-zip \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
+
+#Install PHP Composer
+RUN cd /tmp && \
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php -r "if (hash_file('sha384', 'composer-setup.php') === file_get_contents('https://composer.github.io/installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
+    php composer-setup.php && \
+    php -r "unlink('composer-setup.php');" && \
+    mv composer.phar /usr/local/bin/composer
 
 #Change apache web directory to /www and enable mod_rewrite
 RUN mkdir /www && \
@@ -24,5 +37,3 @@ RUN mkdir /www && \
 
 EXPOSE 80
 WORKDIR /www
-
-CMD apachectl -D FOREGROUND

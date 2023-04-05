@@ -15,6 +15,10 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+
+    # https://github.com/docker/setup-qemu-action
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
       
     # setup Docker buld action
     - name: Set up Docker Buildx
@@ -32,6 +36,8 @@ jobs:
       with:
         # relative path to the place where source code with Dockerfile is located
         context: ./ubuntu/22.04
+        #
+        platforms: linux/amd64,linux/arm64/v8
         # Note: tags has to be all lower-case
         tags: |
           makzin/apachephp:latest

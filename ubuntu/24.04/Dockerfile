@@ -1,10 +1,11 @@
 FROM ubuntu:24.04
 LABEL maintainer="Sarfaraz Ali Khan (mrkhan1417@gmail.com)"
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 #Install Apache2 And PHP
 RUN apt update && \
-    DEBIAN_FRONTEND=noninteractive \
-    apt install -y \
+    apt install -y --no-install-recommends \
     apache2 \
     php \
     libapache2-mod-php \
@@ -18,18 +19,15 @@ RUN apt update && \
     php-soap \
     php-zip \
     unzip \
+    curl \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-#Install PHP Composer
-RUN cd /tmp && \
-    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
-    php -r "if (hash_file('sha384', 'composer-setup.php') === file_get_contents('https://composer.github.io/installer.sig')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
-    php composer-setup.php && \
-    php -r "unlink('composer-setup.php');" && \
-    mv composer.phar /usr/local/bin/composer
+# Install Composer (with proper verification)
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-#Change apache web directory to /www and enable mod_rewrite
-RUN mkdir /www && \
+# Change Apache web directory to /www and enable mod_rewrite
+RUN mkdir -p /www && \
     sed -i "s|/var/www|/www|g" /etc/apache2/apache2.conf && \
     sed -i "s|/var/www/html|/www|g" /etc/apache2/sites-available/000-default.conf && \
     a2enmod rewrite && \
@@ -38,4 +36,9 @@ RUN mkdir /www && \
 EXPOSE 80
 WORKDIR /www
 
-CMD apachectl -D FOREGROUND
+# Add a healthcheck to monitor Apache
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost || exit 1
+
+# Start Apache in the foreground
+CMD ["apachectl", "-D", "FOREGROUND"]
